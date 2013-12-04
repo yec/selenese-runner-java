@@ -81,10 +81,13 @@ public class WebDriverElementFinder extends ElementFinder {
         if (hasFrames(driver)) {
             List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
             for (WebElement iframe : iframes) {
-                switchTo.frame(iframe);
-                result = handler.handle(driver, arg);
-                if (!result.isEmpty())
-                    return result.get(0);
+                if (!iframe.getAttribute("id").equals("LOCSTORAGE")) {
+                    switchTo.frame(iframe);
+                    result = handler.handle(driver, arg);
+                    if (!result.isEmpty())
+                        return result.get(0);
+
+                }
             }
         }
         throw new SeleniumException("Element " + locator + " not found");
