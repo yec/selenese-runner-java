@@ -16,6 +16,7 @@ import org.apache.commons.lang3.time.FastDateFormat;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.Augmenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,7 @@ public class Runner implements HtmlResultHolder {
     }
 
     private void takeScreenshot(File file, TestCase testcase) {
-        File tmp = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        File tmp = ((TakesScreenshot) new Augmenter().augment(driver)).getScreenshotAs(OutputType.FILE);
         try {
             FileUtils.moveFile(tmp, file);
         } catch (IOException e) {
@@ -87,8 +88,8 @@ public class Runner implements HtmlResultHolder {
      * @exception UnsupportedOperationException WebDriver does not supoort capturing screenshot.
      */
     public void takeScreenshot(String filename, TestCase testcase) throws UnsupportedOperationException {
-        if (!(driver instanceof TakesScreenshot))
-            throw new UnsupportedOperationException("webdriver does not support capturing screenshot.");
+        if (!(driver instanceof TakesScreenshot)) {
+        }
         if (File.separatorChar != '\\' && filename.contains("\\"))
             filename = filename.replace('\\', File.separatorChar);
         File file = new File(filename).getAbsoluteFile();
@@ -107,7 +108,7 @@ public class Runner implements HtmlResultHolder {
      * @param testcase test-case instance.
      */
     public void takeScreenshotAll(String prefix, int index, TestCase testcase) {
-        if (screenshotAllDir == null || !(driver instanceof TakesScreenshot))
+        if (screenshotAllDir == null)
             return;
         String filename = String.format("%s_%s_%d.png", prefix, FILE_DATE_TIME.format(Calendar.getInstance()), index);
         takeScreenshot(new File(screenshotAllDir, filename), testcase);
@@ -123,7 +124,7 @@ public class Runner implements HtmlResultHolder {
      * @param testcase test-case instance.
      */
     public void takeScreenshotOnFail(String prefix, int index, TestCase testcase) {
-        if (screenshotOnFailDir == null || !(driver instanceof TakesScreenshot))
+        if (screenshotOnFailDir == null)
             return;
         String filename = String.format("%s_%s_%d_fail.png", prefix, FILE_DATE_TIME.format(Calendar.getInstance()), index);
         takeScreenshot(new File(screenshotOnFailDir, filename), testcase);
